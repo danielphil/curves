@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "out": "js/curves.js",
+        "sourceMap": true,
+        "declaration": true,
+        "noEmitOnError": true
+    },
+    "files": [
+        "src/main.ts"
+    ]
+}

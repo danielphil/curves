@@ -1,0 +1,19 @@
+{
+  "name": "curves",
+  "version": "0.0.0",
+  "authors": [
+    "Daniel Phillips <dphildev@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
