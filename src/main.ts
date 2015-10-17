@@ -51,6 +51,7 @@ $(function () {
 	curve.addPoint(270, 200, 40, 0);
 	curve.addPoint(130, 300, 0, -40);
 	
+	curve.generateTangentsClampedEnd();
 	curve.generateCurve();
 	
 	canvas = <HTMLCanvasElement>$("#mainCanvas").get(0);
