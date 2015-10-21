@@ -46,6 +46,37 @@ module Curves {
 			);
 		}
 
+		private static solveTridiagonalMatrix(a: Float32Array, b: Float32Array, c: Float32Array, d: Float32Array) {
+			if (a.length != b.length || a.length != c.length || a.length != d.length) {
+				console.error("a, b, c and d must all be equal length");
+			}
+			
+			var n = a.length;
+			
+			var aDash = 0;
+			var bDash = 1;
+			
+			var cDash = new Float32Array(n);
+			cDash[0] = c[0] / b[0];
+			for (var i = 1; i < n; i++) {
+				cDash[i] = c[i] / (b[i] - cDash[i - 1] * a[i]);
+			}
+			
+			var dDash = new Float32Array(n);
+			dDash[0] = d[0] / b[0];
+			for (var i = 1; i < n; i++) {
+				dDash[i] = (d[i] - dDash[i - 1] * a[i]) / (b[i] - cDash[i - 1] * a[i]);
+			}
+			
+			var x = new Float32Array(n);
+			x[n - 1] = dDash[n - 1];
+			for (var i = n - 2; i >= 0; i--) {
+				x[i] = dDash[i] - cDash[i] * x[i + 1];
+			}
+			
+			return x;
+		}
+		
 		private static generateTangentsClampedEnd1d(points: Float32Array, v0Tangent: number, v1Tangent: number) {
 			// TODO: tidy up the unnecessary calculations in here
 			
@@ -76,28 +107,41 @@ module Curves {
 			}
 			d[n - 1] = v1Tangent;
 			
-			var aDash = 0;
-			var bDash = 1;
+			return Hermite.solveTridiagonalMatrix(a, b, c, d);
+		}
+		
+		private static generateTangentsNaturalSpline1d(points: Float32Array) {
+			// TODO: tidy up the unnecessary calculations in here
 			
-			var cDash = new Float32Array(n);
-			cDash[0] = c[0] / b[0];
-			for (var i = 1; i < n; i++) {
-				cDash[i] = c[i] / (b[i] - cDash[i - 1] * a[i]);
+			var n = points.length;
+			if (n < 3) {
+				// Need three points to be able to interpolate
+				return;
 			}
 			
-			var dDash = new Float32Array(n);
-			dDash[0] = d[0] / b[0];
-			for (var i = 1; i < n; i++) {
-				dDash[i] = (d[i] - dDash[i - 1] * a[i]) / (b[i] - cDash[i - 1] * a[i]);
-			}
+			// Create [a] array of form [0 1 1 1 1 1] 
+			var a = new Float32Array(n).fill(1);
+			a[0] = 0;
+			a[n - 1] = 1;
 			
-			var x = new Float32Array(n);
-			x[n - 1] = dDash[n - 1];
-			for (var i = n - 2; i >= 0; i--) {
-				x[i] = dDash[i] - cDash[i] * x[i + 1];
-			}
+			// Create [b] array of form [2 4 4 4 4 2]
+			var b = new Float32Array(n).fill(4);
+			b[0] = 1;
+			b[n - 1] = 1;
 			
-			return x;
+			// Create [c] array of form [1 1 1 1 1 0]
+			var c = new Float32Array(a);
+			c[0] = 1;
+			
+			// Create [d] array of form [p0, 3(p2 - p0), 3(p3 - p1), pn]
+			var d = new Float32Array(n);
+			d[0] = 3 * (points[1] - points[0]);
+			for (var i = 1; i < n - 1; i++) {
+				d[i] = 3 * (points[i + 1] - points[i - 1]);
+			}
+			d[n - 1] = 3 * (points[n - 1] - points[n - 2]);
+			
+			return Hermite.solveTridiagonalMatrix(a, b, c, d);
 		}	
 			
 		generateTangentsClampedEnd() {
@@ -124,6 +168,27 @@ module Curves {
 				this.points[0].tangent.y,
 				this.points[this.points.length - 1].tangent.y
 			);
+			
+			for (var i = 0; i < xTangents.length; i++) {
+				this.points[i].tangent.set(xTangents[i], yTangents[i]);
+			}
+		}
+		
+		generateTangentsNaturalSpline() {
+			// Algorithm from Essential Games and Interactive Applications 2nd Ed. p 448
+			
+			// <any> casts here because the TypeScript definition of Float32Array insists on having a list
+			// of points that are numbers. The map function creates that for us, but TypeScript only wants us to 
+			// have this.points as an array of numbers.
+			var x_positions = Float32Array.from(<any>this.points, <any>function(elem: HermiteControlPoint) {
+				return elem.position.x;
+			});
+			var y_positions = Float32Array.from(<any>this.points, <any>function(elem: HermiteControlPoint) {
+				return elem.position.y;
+			});
+			
+			var xTangents = Hermite.generateTangentsNaturalSpline1d(x_positions);
+			var yTangents = Hermite.generateTangentsNaturalSpline1d(y_positions);
 			
 			for (var i = 0; i < xTangents.length; i++) {
 				this.points[i].tangent.set(xTangents[i], yTangents[i]);
