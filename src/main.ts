@@ -31,6 +31,17 @@ function paint() {
 		}
 
 		context.stroke();
+		
+		context.strokeStyle = "blue";
+		for (var i = 0; i < curve.curveTangents.length; i++) {
+			context.beginPath();
+			var t0 = curve.curvePoints[i];
+			var scaledTangent = new THREE.Vector2().copy(curve.curveTangents[i]).multiplyScalar(10);
+			var t1 = new THREE.Vector2().copy(t0).add(scaledTangent);
+			context.moveTo(t0.x, t0.y);
+			context.lineTo(t1.x, t1.y);
+			context.stroke();
+		}
 	}
 }
 
