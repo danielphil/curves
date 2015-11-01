@@ -1,0 +1,18 @@
+/* Based on the guide at http://blog.stevensanderson.com/2011/10/05/full-height-app-layouts-a-css-trick-to-make-it-easier/ */
+/* Plus some prefixing of 'layout' to CSS class names to stop it conflicting with bootstrap */
+body { margin: 0 }
+.layout-row, .layout-col { overflow: hidden; position: absolute; }
+.layout-row { left: 0; right: 0; }
+.layout-col { top: 0; bottom: 0; }
+.layout-scroll-x { overflow-x: auto; }
+.layout-scroll-y { overflow-y: auto; }
+
+.layout-header.layout-row { height: 75px; top: 0; }
+.layout-visualiser.layout-row { top: 125px; bottom: 50px; }
+.layout-footer.layout-row { height: 50px; bottom: 0; }
+
+.layout-toolbar.layout-row { height: 50px; top: 75px; }
+
+.redbg { background-color: #cc8888 }
+.layout-left { width: 50%; }
+.layout-right { left: 50%; right: 0; }
