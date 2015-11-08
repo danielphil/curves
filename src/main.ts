@@ -4,9 +4,11 @@
 
 var canvas : HTMLCanvasElement;
 var curve : Curves.Hermite;
+var curveImage = new Image();
 
 function paint() {
 	var context = canvas.getContext("2d");
+	context.drawImage(curveImage, 0, 0);
 	
 	curve.points.forEach(function (point) {
 		context.fillStyle = "black";
@@ -53,7 +55,25 @@ function resize() {
 	paint();	
 }
 
+function loadImage(e: any) {
+	var filelist: FileList = e.target.files;
+	if (filelist.length == 0) {
+		return;	
+	}
+	
+	var file = filelist[0];
+	
+	var reader = new FileReader();
+	reader.onload = function (e) {
+		curveImage.src = e.target.result;
+	};
+	
+	reader.readAsDataURL(file);
+}
+
 $(function () {
+	curveImage.onload = resize;
+	
 	curve = new Curves.Hermite();
 	curve.addPoint(100, 100, 0, 10);
 	curve.addPoint(150, 150, -10, -10);
@@ -67,6 +87,8 @@ $(function () {
 	
 	canvas = <HTMLCanvasElement>$("#mainCanvas").get(0);
 	resize();
+	
+	$("#loadSourceImage").on("change", loadImage);
 });
 
 $(window).resize(resize);
