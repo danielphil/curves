@@ -1,3 +1,5 @@
+/// <reference path="../typings/threejs/three.d.ts" />
+
 module Curves {
 	export interface HermiteControlPoint {
 		position: THREE.Vector2;
@@ -69,7 +71,21 @@ module Curves {
 			var tangent = new THREE.Vector2(gradient.y, gradient.x * -1);
 			return tangent.normalize();
 		}
-
+		
+		static approxSegmentLength(cp0: HermiteControlPoint, cp1: HermiteControlPoint) : number {
+			var points: THREE.Vector2[] = [];
+			for (var u = 0; u <= 1; u += 0.1) {
+				points.push(Curves.Hermite.interpolateSegment(cp0, cp1, u));
+			}
+			
+			var length = 0;
+			for (var i = 0; i < points.length - 1; i++) {
+				length += new THREE.Vector2().copy(points[i + 1]).sub(points[i]).length(); 
+			}
+			
+			return length;
+		}
+		
 		private static solveTridiagonalMatrix(a: Float32Array, b: Float32Array, c: Float32Array, d: Float32Array) {
 			if (a.length != b.length || a.length != c.length || a.length != d.length) {
 				console.error("a, b, c and d must all be equal length");

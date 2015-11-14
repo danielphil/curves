@@ -64,11 +64,12 @@ function getPixel(srcData: ImageData, x: number, y: number, rgb: number[]) {
 		rgb[0] = 0;
 		rgb[1] = 0;
 		rgb[2] = 0;
+	} else {
+		var index = 4 * (xInt + yInt * srcData.width);
+		rgb[0] = srcData.data[index]; // R
+		rgb[1] = srcData.data[index + 1]; // G
+		rgb[2] = srcData.data[index + 2]; // B
 	}
-	var index = 4 * (xInt + yInt * srcData.width);
-	rgb[0] = srcData.data[index]; // R
-	rgb[1] = srcData.data[index + 1]; // G
-	rgb[2] = srcData.data[index + 2]; // B
 }
 
 function setPixel(dstData: ImageData, x: number, y: number, rgb: number[]) {
@@ -99,7 +100,11 @@ function paintRenderCanvas() {
 	for (var i = 0; i < noOfPoints - 1; i++) {
 		var p0 = curve.points[i];
 		var p1 = curve.points[i + 1];
-		for (var u = 0; u <= 1; u += 0.01) {
+		
+		var length = Curves.Hermite.approxSegmentLength(p0, p1);
+		
+		for (var pos = 0; pos <= length; pos++) {
+			var u = pos / length;
 			var pointOnCurve = Curves.Hermite.interpolateSegment(p0, p1, u);
 			var tangentForPoint = Curves.Hermite.interpolateTangent(p0, p1, u);
 			
