@@ -39,7 +39,7 @@ module Curves {
 			return 3 * u2 * (2 * P0 - 2 * P1 + PT0 + PT1) - 2 * u * (3 * P0 - 3 * P1 + 2 * PT0 + PT1) + PT0;
 		}
 		
-		private static interpolateSegment(cp0: HermiteControlPoint, cp1: HermiteControlPoint, t: number) {
+		static interpolateSegment(cp0: HermiteControlPoint, cp1: HermiteControlPoint, t: number) {
 			var p0 = cp0.position;
 			var pT0 = cp0.tangent;
 			var p1 = cp1.position;
@@ -53,7 +53,7 @@ module Curves {
 			);
 		}
 		
-		private static interpolateTangent(cp0: HermiteControlPoint, cp1: HermiteControlPoint, t: number) {
+		static interpolateTangent(cp0: HermiteControlPoint, cp1: HermiteControlPoint, t: number) {
 			var p0 = cp0.position;
 			var pT0 = cp0.tangent;
 			var p1 = cp1.position;
