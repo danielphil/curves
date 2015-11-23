@@ -1,5 +1,6 @@
 /// <reference path="../typings/threejs/three.d.ts" />
 /// <reference path="../typings/jquery.d.ts" />
+/// <reference path="CurveView.ts" />
 /// <reference path="Hermite.ts" />
 
 var canvas : HTMLCanvasElement;
@@ -170,6 +171,7 @@ $(function () {
 	curve.generateTangentsNaturalSpline();
 	curve.generateCurve();
 	
+	var curveView = new Curves.CurveView($('#content').get(0));
 	canvas = <HTMLCanvasElement>$("#mainCanvas").get(0);
 	renderCanvas = <HTMLCanvasElement>$("#renderCanvas").get(0);
 	
