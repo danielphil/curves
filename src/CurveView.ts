@@ -1,34 +1,10 @@
 /// <reference path="../typings/threejs/three.d.ts" />
 /// <reference path="../typings/jquery.d.ts" />
+/// <reference path="ThreeView.ts" />
 
 module Curves {
-	export class CurveView
-	{
-		private scene = new THREE.Scene();
-		
-		private camera = new THREE.OrthographicCamera(
-			window.innerWidth / -500,
-			window.innerWidth / 500,
-			window.innerHeight / 500,
-			window.innerHeight / -500,
-			1,
-			1000
-		);
-		
-		private renderer = new THREE.WebGLRenderer();
-		
-		private container: HTMLElement;
-		
-		constructor(container: HTMLElement) {
-			this.container = container;
-			
-			this.renderer.setSize($(container).width(), $(container).height());
-			container.appendChild(this.renderer.domElement);
-			
-			$(window).resize(this.resize);
-			this.render();
-		}
-		
+	export class CurveView extends ThreeView
+	{	
 		loadTexture(data: string) {
 			var loader = new THREE.TextureLoader();
 			loader.load(data, this.createScene);
@@ -82,14 +58,6 @@ module Curves {
 			//registerDragHandler(renderer.domElement, cube);
 			
 			this.render();
-		}
-		
-		private resize() {
-			this.renderer.setSize($(this.container).width(), $(this.container).height());
-		}
-		
-		private render() {
-			this.renderer.render(this.scene, this.camera);
 		}
 	}
 }
