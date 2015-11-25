@@ -10,6 +10,6 @@ module Curves
 		}
 		
 		protected abstract resize() : void;
-		protected abstract render() : void;
+		abstract render() : void;
 	}
 }
