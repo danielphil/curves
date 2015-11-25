@@ -6,6 +6,8 @@ module Curves {
 	export class CurveView extends ThreeView
 	{
 		private curve = new Curves.Hermite();
+		private curvePointGeometry = new THREE.PlaneGeometry(0.03, 0.03);
+		private curvePointMaterial = new THREE.MeshBasicMaterial({ color: 0xffff00, depthTest: false, depthWrite: false });
 		
 		setCurve(curve: Curves.Hermite) {
 			this.curve = curve;
@@ -54,13 +56,24 @@ module Curves {
 			geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
 			geometry.addAttribute('uv', new THREE.BufferAttribute(uv, 2));
 			
-			var material = new THREE.MeshBasicMaterial( { map: texture } );
+			var material = new THREE.MeshBasicMaterial( { map: texture, depthTest: false, depthWrite: false } );
 			var cube = new THREE.Mesh( geometry, material );
 			this.scene.add(cube);
+			
 			this.camera.position.z = 1.5;
-			this.camera.zoom = 1.5;
+			this.camera.zoom = 0.5;
 			this.camera.updateProjectionMatrix();
 			
+			
+			this.curve.points.forEach((controlPoint) => {
+				var point = controlPoint.position;
+				var pointMesh = new THREE.Mesh(this.curvePointGeometry, this.curvePointMaterial);
+				pointMesh.position.x = point.x / 100 - 1;
+				pointMesh.position.y = point.y / 100 - 1;
+				this.scene.add(pointMesh);
+			});
+			
+			this.renderer.sortObjects = false;
 			//registerDragHandler(renderer.domElement, cube);
 			
 			this.render();
