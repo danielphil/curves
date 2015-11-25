@@ -6,8 +6,8 @@
 /// <reference path="Hermite.ts" />
 
 var curveImage = new Image();
-var canvasCurveView : Curves.CanvasCurveView;
-var canvasCurveRenderView : Curves.CanvasCurveRenderView;
+var curveView : Curves.CurveView;
+var curveRenderView : Curves.CanvasCurveRenderView;
 
 function loadImage(e: any) {
 	var filelist: FileList = e.target.files;
@@ -19,6 +19,7 @@ function loadImage(e: any) {
 	
 	var reader = new FileReader();
 	reader.onload = function (e: any) {
+		curveView.setTextureData(e.target.result);
 		curveImage.src = e.target.result;
 	};
 	
@@ -27,8 +28,7 @@ function loadImage(e: any) {
 
 $(function () {
 	curveImage.onload = function () {
-		canvasCurveView.setImage(curveImage);
-		canvasCurveRenderView.setImage(curveImage);
+		curveRenderView.setImage(curveImage);
 	}
 	
 	var curve = new Curves.Hermite();
@@ -42,14 +42,14 @@ $(function () {
 	curve.generateTangentsNaturalSpline();
 	curve.generateCurve();
 	
-	canvasCurveView = new Curves.CanvasCurveView($('#content').get(0));
-	canvasCurveRenderView = new Curves.CanvasCurveRenderView($("#render").get(0));
+	curveView = new Curves.CurveView($('#content').get(0));
+	curveRenderView = new Curves.CanvasCurveRenderView($("#render").get(0));
 	
-	canvasCurveView.setCurve(curve);
-	canvasCurveView.render();
+	curveView.setCurve(curve);
+	curveView.render();
 	
-	canvasCurveRenderView.setCurve(curve);
-	canvasCurveRenderView.render();
+	curveRenderView.setCurve(curve);
+	curveRenderView.render();
 	
 	$("#loadSourceImage").on("change", loadImage);
 });

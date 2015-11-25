@@ -4,10 +4,16 @@
 
 module Curves {
 	export class CurveView extends ThreeView
-	{	
-		loadTexture(data: string) {
+	{
+		private curve = new Curves.Hermite();
+		
+		setCurve(curve: Curves.Hermite) {
+			this.curve = curve;
+		}
+		
+		setTextureData(data: string) {
 			var loader = new THREE.TextureLoader();
-			loader.load(data, this.createScene);
+			loader.load(data, (texture) => this.createScene(texture));
 		}
 		
 		private createScene(texture: THREE.Texture) {
