@@ -45,6 +45,7 @@ module Curves {
 			);
 			
 			this.renderer.setSize(width, height);
+			this.render();
 		}
 		
 		protected render() {

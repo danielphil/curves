@@ -6,7 +6,7 @@ module Curves
 		
 		constructor(container: HTMLElement) {
 			this.container = container;
-			$(window).resize(this.resize);
+			$(window).resize(() => this.resize());
 		}
 		
 		protected abstract resize() : void;
