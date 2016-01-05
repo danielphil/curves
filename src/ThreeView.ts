@@ -10,8 +10,8 @@ module Curves {
 		protected camera = new THREE.OrthographicCamera(
 			window.innerWidth / -500,
 			window.innerWidth / 500,
-			window.innerHeight / 500,
 			window.innerHeight / -500,
+			window.innerHeight / 500,
 			1,
 			1000
 		);
@@ -38,8 +38,8 @@ module Curves {
 			this.camera = new THREE.OrthographicCamera(
 				width / -500,
 				width / 500,
-				height / 500,
 				height / -500,
+				height / 500,
 				1,
 				1000
 			);

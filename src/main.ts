@@ -1,13 +1,13 @@
 /// <reference path="../typings/threejs/three.d.ts" />
 /// <reference path="../typings/jquery.d.ts" />
 /// <reference path="CanvasCurveView.ts" />
-/// <reference path="CanvasCurveRenderView.ts" />
+/// <reference path="CurveRenderView.ts" />
 /// <reference path="CurveEditView.ts" />
 /// <reference path="Hermite.ts" />
 
 var curveImage = new Image();
 var curveEditView : Curves.CurveEditView;
-var curveRenderView : Curves.CanvasCurveRenderView;
+var curveRenderView : Curves.CurveRenderView;
 
 function loadImage(e: any) {
 	var filelist: FileList = e.target.files;
@@ -28,7 +28,7 @@ function loadImage(e: any) {
 $(function () {
 	curveImage.onload = function () {
 		curveEditView.setImage(curveImage);
-		curveRenderView.setImage(curveImage);
+		//curveRenderView.setImage(curveImage);
 	}
 	
 	var curve = new Curves.Hermite();
@@ -43,7 +43,7 @@ $(function () {
 	curve.generateCurve();
 	
 	curveEditView = new Curves.CurveEditView($('#content').get(0));
-	curveRenderView = new Curves.CanvasCurveRenderView($("#render").get(0));
+	curveRenderView = new Curves.CurveRenderView($("#render").get(0));
 	
 	curveEditView.setCurve(curve);
 	curveEditView.render();
