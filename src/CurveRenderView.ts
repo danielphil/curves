@@ -86,7 +86,12 @@ module Curves {
                 );
                 
                 // Yuck. Must tidy up.
+                // This is used to get the index of the current segment. Needs to be the same over the entire
+                // triangle to avoid interpolation in the shader.
                 segmentIndex.push(index, index, index, index, index, index);
+                
+                // Runs from 0 to 1, where 0 is the left side of the segment, and 1 is the right. We do want
+                // interpolation here, as this is used to calculate how far along the curve segment we are.
                 segmentDelta.push(0, 0, 1, 1, 0, 1);
                 
                 color.push(
