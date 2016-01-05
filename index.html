@@ -7,6 +7,59 @@
     	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     	<title>Curve Rendering</title>
 
+        <script id="curve-render-vertex-shader" type="x-shader/x-fragment">
+            uniform vec2 uPoints[NO_OF_CONTROL_POINTS];
+            uniform vec2 uTangents[NO_OF_CONTROL_POINTS];
+            
+            #ifdef USE_COLOR
+                varying vec3 vColor;
+            #endif
+            
+            attribute float segmentDelta;
+            varying float vSegmentDelta;
+            
+            attribute float segmentIndex;
+            
+            varying vec2 vP0;
+            varying vec2 vP1;
+            varying vec2 vT0;
+            varying vec2 vT1;  
+            
+            void main() {
+                vColor = color;
+                vSegmentDelta = segmentDelta;
+                
+                int point0Index = int(segmentIndex);
+                vP0 = uPoints[point0Index];
+                vT0 = uTangents[point0Index];
+                
+                int point1Index = point0Index + 1;
+                vP1 = uPoints[point1Index];
+                vT1 = uTangents[point1Index];
+                
+                gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+            }
+        </script>
+        
+        <script id="curve-render-fragment-shader" type="x-shader/x-fragment">
+            uniform vec2 uPoints[NO_OF_CONTROL_POINTS];
+            uniform vec2 uTangents[NO_OF_CONTROL_POINTS];
+            
+            #ifdef USE_COLOR
+                varying vec3 vColor;
+            #endif
+            
+            varying float vSegmentDelta;
+            varying vec2 vP0;
+            varying vec2 vP1;
+            varying vec2 vT0;
+            varying vec2 vT1;  
+            
+            void main() {
+                gl_FragColor = vec4(vSegmentDelta, vSegmentDelta, vSegmentDelta, 1);
+            }
+        </script>
+        
 		<!-- Bootstrap -->
 		<link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 		<link rel="stylesheet" type="text/css" href="styles.css" />

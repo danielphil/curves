@@ -6,7 +6,7 @@ module Curves {
     {
         private curve = new Curves.Hermite();
         private mesh: THREE.Mesh;
-        
+
         constructor(container: HTMLElement) {
             super(container);
             
@@ -61,9 +61,11 @@ module Curves {
             var vertices = new Array<number>();
             var color = new Array<number>();
             var uv = new Array<number>();
+            var segmentIndex = new Array<number>();
+            var segmentDelta = new Array<number>();
             
             var scaledLengths = lengths.map(function (length) { return length / imageHeightPixels; });
-            scaledLengths.forEach(function (length) {
+            scaledLengths.forEach(function (length, index) {
                 var right = x + length;
                 vertices.push(
                     x, top, 0,
@@ -83,6 +85,10 @@ module Curves {
                     0, 1
                 );
                 
+                // Yuck. Must tidy up.
+                segmentIndex.push(index, index, index, index, index, index);
+                segmentDelta.push(0, 0, 1, 1, 0, 1);
+                
                 color.push(
                     1, 0, 0,
                     0, 0, 1,
@@ -99,10 +105,27 @@ module Curves {
 			geometry.addAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3));           
 			geometry.addAttribute('uv', new THREE.BufferAttribute(new Float32Array(uv), 2));           
             geometry.addAttribute('color', new THREE.BufferAttribute(new Float32Array(color), 3));
+            geometry.addAttribute('segmentIndex', new THREE.BufferAttribute(new Float32Array(segmentIndex), 1));
+            geometry.addAttribute('segmentDelta', new THREE.BufferAttribute(new Float32Array(segmentDelta), 1));
             
             this.mesh.geometry.dispose();
             // BufferGeometry not convertable to Geometry? Hence cast below.
             this.mesh.geometry = <any>geometry;
+            
+            this.mesh.material.dispose();
+            this.mesh.material = new THREE.ShaderMaterial({
+                uniforms: {
+                    uPoints: { type: "v2v", value: curve.points.map(function (cp) { return cp.position; }) },
+                    uTangents: { type: "v2v", value: curve.points.map(function (cp) { return cp.tangent; }) }
+                },
+                defines: {
+                    NO_OF_CONTROL_POINTS: curve.points.length
+                },
+                vertexShader: document.getElementById('curve-render-vertex-shader').textContent,
+                fragmentShader: document.getElementById('curve-render-fragment-shader').textContent,
+                wireframe: false,
+                vertexColors: THREE.VertexColors
+            });
 		}
     }
 }
