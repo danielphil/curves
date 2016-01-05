@@ -39,41 +39,66 @@ module Curves {
             if (curve.points.length < 2) {
                 return;
             }
-                        
-            var leftX = -1.0;
-            var rightX = 1.0;
-        
-            var vertices = new Float32Array([
-                leftX, -1.0, 0,
-                leftX, 1.0, 0,
-                rightX, -1.0, 0,
-                rightX, -1.0, 0,
-                leftX, 1.0, 0,
-                rightX, 1.0, 0
-            ]);
             
-            var uv = new Float32Array([
-                0, 1,
-                1, 1,
-                1, 0,
-                1, 0,
-                0, 0,
-                0, 1
-            ]);
+            // Get the approximate length of each segment of the curve
+            var lengths: number[] = [];
+            for (var i = 0; i < curve.points.length - 1; i++) {
+                lengths.push(Curves.Hermite.approxSegmentLength(curve.points[i], curve.points[i + 1]));
+            }
             
-            var color = new Float32Array([
-                1, 0, 0,
-                0, 0, 1,
-                0, 1, 0,
-                0, 1, 0,
-                0, 0, 1,
-                1, 1, 1
-            ]);
+            // Hardcoding for now- need to read this from the image
+            var imageHeightPixels = 600;
+
+            var totalLengthPixels = lengths.reduce(function (a, b) { return a + b; });
+            
+            // The height of the texture is scaled to 1.0 so we need to perform a similar scaling to normalise the length
+            var totalWidth = totalLengthPixels / imageHeightPixels;        
+            
+            // Build up the geometry
+            var top = -0.5;
+            var bottom = 0.5;
+            var x = -totalWidth / 2;
+            var vertices = new Array<number>();
+            var color = new Array<number>();
+            var uv = new Array<number>();
+            
+            var scaledLengths = lengths.map(function (length) { return length / imageHeightPixels; });
+            scaledLengths.forEach(function (length) {
+                var right = x + length;
+                vertices.push(
+                    x, top, 0,
+                    x, bottom, 0,
+                    right, top, 0,
+                    right, top, 0,
+                    x, bottom, 0,
+                    right, bottom, 0
+                );
+                
+                uv.push(
+                    0, 1,
+                    1, 1,
+                    1, 0,
+                    1, 0,
+                    0, 0,
+                    0, 1
+                );
+                
+                color.push(
+                    1, 0, 0,
+                    0, 0, 1,
+                    0, 1, 0,
+                    0, 1, 0,
+                    0, 0, 1,
+                    1, 1, 1
+                );
+                
+                x += length;
+            });
             
             var geometry = new THREE.BufferGeometry();
-			geometry.addAttribute('position', new THREE.BufferAttribute(vertices, 3));           
-			geometry.addAttribute('uv', new THREE.BufferAttribute(uv, 2));           
-            geometry.addAttribute('color', new THREE.BufferAttribute(color, 3));
+			geometry.addAttribute('position', new THREE.BufferAttribute(new Float32Array(vertices), 3));           
+			geometry.addAttribute('uv', new THREE.BufferAttribute(new Float32Array(uv), 2));           
+            geometry.addAttribute('color', new THREE.BufferAttribute(new Float32Array(color), 3));
             
             this.mesh.geometry.dispose();
             // BufferGeometry not convertable to Geometry? Hence cast below.
