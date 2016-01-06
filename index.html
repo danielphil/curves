@@ -110,8 +110,6 @@
                 if (samplePoint.x < 0.0 || samplePoint.x > uTextureDimensions.x || samplePoint.y < 0.0 || samplePoint.y > uTextureDimensions.y) {
                     gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
                 } else {
-                    float c = textureSamplePoint.x;
-                    gl_FragColor = vec4(textureSamplePoint.x, textureSamplePoint.y, 0.0, 0.0);
                     gl_FragColor = texture2D(uTexture, textureSamplePoint);
                 }
             }
