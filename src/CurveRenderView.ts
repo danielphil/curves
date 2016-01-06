@@ -41,7 +41,7 @@ module Curves {
             var loader = new THREE.TextureLoader();
             loader.load(data, (texture) => {
                 texture.minFilter = THREE.LinearFilter; // Need to do this or the texture is flipped in Y by default?
-                texture.flipY = false; 
+                texture.flipY = true; 
                 this.texture = texture;
                 this.updateScene();
             });
@@ -76,6 +76,7 @@ module Curves {
             
             // Hardcoding for now- need to read this from the image
             var imageHeightPixels = texture.image.height;
+            var imageWidthPixels = texture.image.width;
 
             var totalLengthPixels = lengths.reduce(function (a, b) { return a + b; });
             
@@ -104,13 +105,14 @@ module Curves {
                     right, bottom, 0
                 );
                 
+                var halfImageHeight = imageHeightPixels / 2;
                 uv.push(
-                    0, 0,
-                    0, 1,
-                    1, 0,
-                    1, 0,
-                    0, 1,
-                    1, 1
+                    0, -halfImageHeight,
+                    0, halfImageHeight,
+                    1, -halfImageHeight,
+                    1, -halfImageHeight,
+                    0, halfImageHeight,
+                    1, halfImageHeight
                 );
                 
                 // Yuck. Must tidy up.
@@ -150,7 +152,8 @@ module Curves {
                 uniforms: {
                     uPoints: { type: "v2v", value: curve.points.map(function (cp) { return cp.position; }) },
                     uTangents: { type: "v2v", value: curve.points.map(function (cp) { return cp.tangent; }) },
-                    uTexture: { type: "t", value: texture }
+                    uTexture: { type: "t", value: texture },
+                    uTextureDimensions: { type: "v2", value: new THREE.Vector2(imageWidthPixels, imageHeightPixels) }
                 },
                 defines: {
                     NO_OF_CONTROL_POINTS: curve.points.length

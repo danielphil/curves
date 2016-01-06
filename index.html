@@ -25,12 +25,13 @@
             varying vec2 vT0;
             varying vec2 vT1;
             
-            varying vec2 vUV;
+            // Rename vUV to something better as it really represents the location of a fragment in the segment
+            varying vec2 vLocationInSegment;
             
             void main() {
                 vColor = color;
                 vSegmentDelta = segmentDelta;
-                vUV = uv;
+                vLocationInSegment = uv;
                 
                 int point0Index = int(segmentIndex);
                 vP0 = uPoints[point0Index];
@@ -46,7 +47,8 @@
         
         <script id="curve-render-fragment-shader" type="x-shader/x-fragment">
             uniform sampler2D uTexture;
-                        
+            uniform vec2 uTextureDimensions;
+            
             #ifdef USE_COLOR
                 varying vec3 vColor;
             #endif
@@ -56,12 +58,68 @@
             varying vec2 vP1;
             varying vec2 vT0;
             varying vec2 vT1;
-            varying vec2 vUV;
+            varying vec2 vLocationInSegment;
+            
+            float interp(float P0, float P1, float PT0, float PT1, float u) {
+                float u3 = pow(u, 3.0);
+                float u2 = pow(u, 2.0);
+                
+                return (2.0 * u3 - 3.0 * u2 + 1.0) * P0 + (-2.0 * u3 + 3.0 * u2) * P1 + (u3 - 2.0 * u2 + u) * PT0 + (u3 - u2) * PT1;
+            }
+        
+            vec2 interpolateSegment(vec2 p0, vec2 p1, vec2 t0, vec2 t1, float u) {               
+                return vec2(
+                    interp(p0.x, p1.x, t0.x, t1.x, u),
+                    interp(p0.y, p1.y, t0.y, t1.y, u)
+                );
+            }
+            
+            float gradient(float P0, float P1, float PT0, float PT1, float u) {
+			    // First derivative of hermite curve function
+                float u2 = pow(u, 2.0);
+                return 3.0 * u2 * (2.0 * P0 - 2.0 * P1 + PT0 + PT1) - 2.0 * u * (3.0 * P0 - 3.0 * P1 + 2.0 * PT0 + PT1) + PT0;
+		    }
+        
+            vec2 interpolateTangent(vec2 p0, vec2 p1, vec2 t0, vec2 t1, float u) {
+                vec2 g = vec2(
+                    gradient(p0.x, p1.x, t0.x, t1.x, u),
+                    gradient(p0.y, p1.y, t0.y, t1.y, u)
+                );
+                
+                vec2 tangent = vec2(g.y, g.x * -1.0);
+                return normalize(tangent);
+            }
             
             void main() {
-                //gl_FragColor = vec4(vSegmentDelta, vSegmentDelta, vSegmentDelta, 1);
-                gl_FragColor = texture2D(uTexture, vUV);
+                float u = vLocationInSegment.x;
+                vec2 pointOnCurve = interpolateSegment(vP0, vP1, vT0, vT1, u);
+                vec2 tangentForPoint = interpolateTangent(vP0, vP1, vT0, vT1, u);
+                
+                // Y coordinate of vLocationInSegment is in pixels
+                float distanceAlongTangent = vLocationInSegment.y;
+                vec2 scaledTangent = tangentForPoint * distanceAlongTangent;
+                
+                // Sample point in original image coordinates
+                vec2 samplePoint = pointOnCurve + scaledTangent;
+                
+                // Sample point in texture coordinates
+                vec2 textureSamplePoint = samplePoint / uTextureDimensions;
+ 
+                /*
+                float c = abs((distanceAlongTangent) / 240.0);
+                gl_FragColor = vec4(c, c, c, 1.0);
+                */
+                // This could probably be handled by using a single pixel border around the source texture instead of the
+                // conditional here
+
+                if (textureSamplePoint.x < 0.0 || textureSamplePoint.x > 1.0 || textureSamplePoint.y < 0.0 || textureSamplePoint.y > 1.0) {
+                    gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+                } else {
+                    gl_FragColor = texture2D(uTexture, textureSamplePoint);
+                }
             }
+            
+            
         </script>
         
 		<!-- Bootstrap -->
