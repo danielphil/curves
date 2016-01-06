@@ -81,8 +81,9 @@ module Curves {
 
             var totalLengthPixels = lengths.reduce(function (a, b) { return a + b; });
             
-            // The height of the texture is scaled to 1.0 so we need to perform a similar scaling to normalise the length
-            var totalWidth = totalLengthPixels / imageHeightPixels;        
+            // Hardcoded scaling factor here to determine the width of the curve geometry
+            var widthScale = 480;
+            var totalWidth = totalLengthPixels / widthScale;        
             
             // Build up the geometry
             var top = -2;
@@ -94,7 +95,7 @@ module Curves {
             var segmentIndex = new Array<number>();
             var segmentDelta = new Array<number>();
             
-            var scaledLengths = lengths.map(function (length) { return length / imageHeightPixels; });
+            var scaledLengths = lengths.map(function (length) { return length / widthScale; });
             scaledLengths.forEach(function (length, index) {
                 var right = x + length;
                 vertices.push(
