@@ -19,6 +19,7 @@ function loadImage(e: any) {
 	
 	var reader = new FileReader();
 	reader.onload = function (e: any) {
+        curveRenderView.setTextureData(e.target.result);
 		curveImage.src = e.target.result;
 	};
 	
@@ -28,7 +29,6 @@ function loadImage(e: any) {
 $(function () {
 	curveImage.onload = function () {
 		curveEditView.setImage(curveImage);
-		//curveRenderView.setImage(curveImage);
 	}
 	
 	var curve = new Curves.Hermite();

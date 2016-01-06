@@ -6,6 +6,7 @@ module Curves {
     {
         private curve = new Curves.Hermite();
         private mesh: THREE.Mesh;
+        private texture: THREE.Texture;
 
         constructor(container: HTMLElement) {
             super(container);
@@ -33,12 +34,36 @@ module Curves {
             this.render();
         }
 
+        setTextureData(data: string) {
+            var loader = new THREE.TextureLoader();
+            loader.load(data, (texture) => {
+                texture.minFilter = THREE.LinearFilter; // Need to do this or the texture is flipped in Y by default?
+                texture.flipY = false; 
+                this.texture = texture;
+                this.updateScene();
+            });
+        }
+        
         setCurve(curve: Curves.Hermite) {
 			this.curve = curve;
-            
-            if (curve.points.length < 2) {
+            this.updateScene();
+		}
+        
+        private updateScene() {
+            var curve = this.curve;
+            if (!curve || curve.points.length < 2) {
+                // TODO: Should set up a default scene here instead
                 return;
             }
+            
+            var texture = this.texture;
+            if (!texture) {
+                // TODO: Again, should set up a default scene here if there's no texture available
+                return;
+            }
+            
+            var texWidth = texture.image.width;
+			
             
             // Get the approximate length of each segment of the curve
             var lengths: number[] = [];
@@ -47,7 +72,7 @@ module Curves {
             }
             
             // Hardcoding for now- need to read this from the image
-            var imageHeightPixels = 600;
+            var imageHeightPixels = texture.image.height;
 
             var totalLengthPixels = lengths.reduce(function (a, b) { return a + b; });
             
@@ -77,12 +102,12 @@ module Curves {
                 );
                 
                 uv.push(
-                    0, 1,
-                    1, 1,
-                    1, 0,
-                    1, 0,
                     0, 0,
-                    0, 1
+                    0, 1,
+                    1, 0,
+                    1, 0,
+                    0, 1,
+                    1, 1
                 );
                 
                 // Yuck. Must tidy up.
@@ -121,7 +146,8 @@ module Curves {
             this.mesh.material = new THREE.ShaderMaterial({
                 uniforms: {
                     uPoints: { type: "v2v", value: curve.points.map(function (cp) { return cp.position; }) },
-                    uTangents: { type: "v2v", value: curve.points.map(function (cp) { return cp.tangent; }) }
+                    uTangents: { type: "v2v", value: curve.points.map(function (cp) { return cp.tangent; }) },
+                    uTexture: { type: "t", value: texture }
                 },
                 defines: {
                     NO_OF_CONTROL_POINTS: curve.points.length
@@ -131,6 +157,8 @@ module Curves {
                 wireframe: false,
                 vertexColors: THREE.VertexColors
             });
-		}
+            
+            this.render();
+        }
     }
 }

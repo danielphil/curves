@@ -23,11 +23,14 @@
             varying vec2 vP0;
             varying vec2 vP1;
             varying vec2 vT0;
-            varying vec2 vT1;  
+            varying vec2 vT1;
+            
+            varying vec2 vUV;
             
             void main() {
                 vColor = color;
                 vSegmentDelta = segmentDelta;
+                vUV = uv;
                 
                 int point0Index = int(segmentIndex);
                 vP0 = uPoints[point0Index];
@@ -42,9 +45,8 @@
         </script>
         
         <script id="curve-render-fragment-shader" type="x-shader/x-fragment">
-            uniform vec2 uPoints[NO_OF_CONTROL_POINTS];
-            uniform vec2 uTangents[NO_OF_CONTROL_POINTS];
-            
+            uniform sampler2D uTexture;
+                        
             #ifdef USE_COLOR
                 varying vec3 vColor;
             #endif
@@ -53,10 +55,12 @@
             varying vec2 vP0;
             varying vec2 vP1;
             varying vec2 vT0;
-            varying vec2 vT1;  
+            varying vec2 vT1;
+            varying vec2 vUV;
             
             void main() {
-                gl_FragColor = vec4(vSegmentDelta, vSegmentDelta, vSegmentDelta, 1);
+                //gl_FragColor = vec4(vSegmentDelta, vSegmentDelta, vSegmentDelta, 1);
+                gl_FragColor = texture2D(uTexture, vUV);
             }
         </script>
         
