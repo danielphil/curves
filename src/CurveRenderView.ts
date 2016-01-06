@@ -85,8 +85,8 @@ module Curves {
             var totalWidth = totalLengthPixels / imageHeightPixels;        
             
             // Build up the geometry
-            var top = -0.5;
-            var bottom = 0.5;
+            var top = -2;
+            var bottom = 2;
             var x = -totalWidth / 2;
             var vertices = new Array<number>();
             var color = new Array<number>();
@@ -106,7 +106,7 @@ module Curves {
                     right, bottom, 0
                 );
                 
-                var extent = imageHeightPixels / 2;
+                var extent = imageHeightPixels * 2;
                 uv.push(
                     0, extent,
                     0, -extent,
