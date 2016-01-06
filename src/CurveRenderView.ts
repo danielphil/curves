@@ -35,6 +35,9 @@ module Curves {
         }
 
         setTextureData(data: string) {
+            if (this.texture) {
+                this.texture.dispose();
+            }
             var loader = new THREE.TextureLoader();
             loader.load(data, (texture) => {
                 texture.minFilter = THREE.LinearFilter; // Need to do this or the texture is flipped in Y by default?
