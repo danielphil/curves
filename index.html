@@ -103,7 +103,7 @@
                 vec2 samplePoint = pointOnCurve + scaledTangent;
                 
                 // Sample point in texture coordinates
-                vec2 textureSamplePoint = samplePoint / uTextureDimensions;
+                vec2 textureSamplePoint = samplePoint / (uTextureDimensions);
                 
                 // This could probably be handled by using a single pixel border around the source texture instead of the
                 // conditional here
@@ -111,7 +111,8 @@
                     gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
                 } else {
                     float c = textureSamplePoint.x;
-                    gl_FragColor = vec4(textureSamplePoint.x, textureSamplePoint.y, c, 0); //texture2D(uTexture, textureSamplePoint);
+                    gl_FragColor = vec4(textureSamplePoint.x, textureSamplePoint.y, 0.0, 0.0);
+                    gl_FragColor = texture2D(uTexture, textureSamplePoint);
                 }
             }
             

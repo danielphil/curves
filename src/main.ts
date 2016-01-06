@@ -39,18 +39,23 @@ $(function () {
 	}
 	
 	var curve = new Curves.Hermite();
-	curve.addPoint(100, 100, 0, 10);
+/*
+    curve.addPoint(100, 100, 0, 10);
+	curve.addPoint(200, 100, 0, 10);
+    */
+	
+    curve.addPoint(100, 100, 0, 10);
 	curve.addPoint(150, 150, -10, -10);
-	curve.addPoint(170, 90, 20, 10);
+    curve.addPoint(170, 90, 20, 10);
 	curve.addPoint(200, 90, 15, 25);
 	curve.addPoint(270, 200, 40, 0);
 	curve.addPoint(130, 300, 0, -40);
-	
-	curve.generateTangentsNaturalSpline();
+    curve.generateTangentsNaturalSpline();
+
 	curve.generateCurve();
 	
 	curveEditView = new Curves.CurveEditView($('#content').get(0));
-    if (true) {
+    if (false) {
         canvasCurveRenderView = new Curves.CanvasCurveRenderView($("#render").get(0));
     } else {
 	   curveRenderView = new Curves.CurveRenderView($("#render").get(0));

@@ -42,7 +42,7 @@ module Curves {
             var loader = new THREE.TextureLoader();
             loader.load(data, (texture) => {
                 texture.minFilter = THREE.LinearFilter; // Need to do this or the texture is flipped in Y by default?
-                texture.flipY = true; 
+                texture.flipY = false; 
                 this.texture = texture;
                 this.updateScene();
             });
@@ -106,8 +106,7 @@ module Curves {
                     right, bottom, 0
                 );
                 
-                // To make sure we include everything, each vertical line must be as long as the largest axis
-                var extent = Math.max(imageHeightPixels, imageWidthPixels);
+                var extent = imageHeightPixels / 2;
                 uv.push(
                     0, extent,
                     0, -extent,
