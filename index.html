@@ -104,18 +104,14 @@
                 
                 // Sample point in texture coordinates
                 vec2 textureSamplePoint = samplePoint / uTextureDimensions;
- 
-                /*
-                float c = abs((distanceAlongTangent) / 240.0);
-                gl_FragColor = vec4(c, c, c, 1.0);
-                */
+                
                 // This could probably be handled by using a single pixel border around the source texture instead of the
                 // conditional here
-
-                if (textureSamplePoint.x < 0.0 || textureSamplePoint.x > 1.0 || textureSamplePoint.y < 0.0 || textureSamplePoint.y > 1.0) {
+                if (samplePoint.x < 0.0 || samplePoint.x > uTextureDimensions.x || samplePoint.y < 0.0 || samplePoint.y > uTextureDimensions.y) {
                     gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
                 } else {
-                    gl_FragColor = texture2D(uTexture, textureSamplePoint);
+                    float c = textureSamplePoint.x;
+                    gl_FragColor = vec4(textureSamplePoint.x, textureSamplePoint.y, c, 0); //texture2D(uTexture, textureSamplePoint);
                 }
             }
             

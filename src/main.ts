@@ -1,12 +1,14 @@
 /// <reference path="../typings/threejs/three.d.ts" />
 /// <reference path="../typings/jquery.d.ts" />
 /// <reference path="CanvasCurveView.ts" />
+/// <reference path="CanvasCurveRenderView.ts" />
 /// <reference path="CurveRenderView.ts" />
 /// <reference path="CurveEditView.ts" />
 /// <reference path="Hermite.ts" />
 
 var curveImage = new Image();
 var curveEditView : Curves.CurveEditView;
+var canvasCurveRenderView : Curves.CanvasCurveRenderView;
 var curveRenderView : Curves.CurveRenderView;
 
 function loadImage(e: any) {
@@ -19,7 +21,9 @@ function loadImage(e: any) {
 	
 	var reader = new FileReader();
 	reader.onload = function (e: any) {
-        curveRenderView.setTextureData(e.target.result);
+        if (curveRenderView) {
+            curveRenderView.setTextureData(e.target.result);
+        }
 		curveImage.src = e.target.result;
 	};
 	
@@ -29,6 +33,9 @@ function loadImage(e: any) {
 $(function () {
 	curveImage.onload = function () {
 		curveEditView.setImage(curveImage);
+        if (canvasCurveRenderView) {
+            canvasCurveRenderView.setImage(curveImage);
+        }
 	}
 	
 	var curve = new Curves.Hermite();
@@ -43,13 +50,22 @@ $(function () {
 	curve.generateCurve();
 	
 	curveEditView = new Curves.CurveEditView($('#content').get(0));
-	curveRenderView = new Curves.CurveRenderView($("#render").get(0));
+    if (true) {
+        canvasCurveRenderView = new Curves.CanvasCurveRenderView($("#render").get(0));
+    } else {
+	   curveRenderView = new Curves.CurveRenderView($("#render").get(0));
+    }
 	
 	curveEditView.setCurve(curve);
 	curveEditView.render();
 	
-	curveRenderView.setCurve(curve);
-	curveRenderView.render();
+    if (canvasCurveRenderView) {
+        canvasCurveRenderView.setCurve(curve);
+        canvasCurveRenderView.render();
+    } else {
+        curveRenderView.setCurve(curve);
+        curveRenderView.render();
+    }
 	
 	$("#loadSourceImage").on("change", loadImage);
 });

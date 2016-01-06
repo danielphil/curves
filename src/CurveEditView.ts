@@ -27,7 +27,9 @@ module Curves {
 			context.save();
 			context.translate(translation.x, translation.y);
 			
-			context.drawImage(this.image, 0, 0);
+            if (this.image.src) {
+                context.drawImage(this.image, 0, 0);
+            }
 			context.restore();
 			
 			

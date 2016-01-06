@@ -28,6 +28,7 @@ module Curves {
 			this.scene.add(this.mesh);
             
             this.camera.position.z = 1.5;
+            this.camera.zoom = 2;
 			this.camera.updateProjectionMatrix();
             
             this.renderer.sortObjects = false;
@@ -105,14 +106,15 @@ module Curves {
                     right, bottom, 0
                 );
                 
-                var halfImageHeight = imageHeightPixels / 2;
+                // To make sure we include everything, each vertical line must be as long as the largest axis
+                var extent = Math.max(imageHeightPixels, imageWidthPixels);
                 uv.push(
-                    0, -halfImageHeight,
-                    0, halfImageHeight,
-                    1, -halfImageHeight,
-                    1, -halfImageHeight,
-                    0, halfImageHeight,
-                    1, halfImageHeight
+                    0, extent,
+                    0, -extent,
+                    1, extent,
+                    1, extent,
+                    0, -extent,
+                    1, -extent
                 );
                 
                 // Yuck. Must tidy up.
