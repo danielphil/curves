@@ -1,5 +1,6 @@
 /// <reference path="../typings/jquery.d.ts" />
 /// <reference path="../typings/threejs/three.d.ts" />
+/// <reference path="AddPointTool.ts" />
 /// <reference path="CanvasView.ts" />
 /// <reference path="Hermite.ts" />
 
@@ -8,7 +9,12 @@ module Curves {
 	{
 		private image = new Image();
 		private curve = new Curves.Hermite();
-		
+		private addPointTool = new Curves.AddPointTool();
+        
+        constructor(container: HTMLElement) {
+            super(container);
+        }
+        
 		setCurve(curve: Curves.Hermite) {
 			this.curve = curve;
 		}
@@ -16,6 +22,7 @@ module Curves {
 		setImage(image: HTMLImageElement) {
 			this.image = image;
 			this.render();
+            this.activateAddPoint();
 		}
 		
 		render() {
@@ -76,5 +83,13 @@ module Curves {
             
             context.restore();
 		}
+        
+        activateAddPoint() {
+            if (!this.image.src) {
+                return;
+            }
+            
+            this.changeActiveTool(this.addPointTool);
+        }
 	}
 }
