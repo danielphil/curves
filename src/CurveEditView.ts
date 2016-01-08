@@ -19,7 +19,14 @@ module Curves {
 		}
 		
 		render() {
-			var context = this.canvas.getContext("2d");
+            var context = this.canvas.getContext("2d");
+            context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            
+            if (!this.image.src) {
+                context.font = "18px sans-serif";
+                context.fillText("No image loaded", 10, 30);
+                return;
+            }
 			
 			var originToCanvasCentre = new THREE.Vector2(this.canvas.width / 2, this.canvas.height / 2);
 			var imageCentreToOrigin = new THREE.Vector2(-this.image.width / 2, -this.image.height / 2);
@@ -29,9 +36,7 @@ module Curves {
 			
             if (this.image.src) {
                 context.drawImage(this.image, 0, 0);
-            }
-			context.restore();
-			
+            }	
 			
 			this.curve.points.forEach(function (point) {
 				context.fillStyle = "black";
@@ -68,6 +73,8 @@ module Curves {
 					context.stroke();
 				}
 			}
+            
+            context.restore();
 		}
 	}
 }
