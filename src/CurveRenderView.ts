@@ -93,7 +93,6 @@ module Curves {
             var color = new Array<number>();
             var uv = new Array<number>();
             var segmentIndex = new Array<number>();
-            var segmentDelta = new Array<number>();
             
             var scaledLengths = lengths.map(function (length) { return length / widthScale; });
             scaledLengths.forEach(function (length, index) {
@@ -122,10 +121,6 @@ module Curves {
                 // triangle to avoid interpolation in the shader.
                 segmentIndex.push(index, index, index, index, index, index);
                 
-                // Runs from 0 to 1, where 0 is the left side of the segment, and 1 is the right. We do want
-                // interpolation here, as this is used to calculate how far along the curve segment we are.
-                segmentDelta.push(0, 0, 1, 1, 0, 1);
-                
                 color.push(
                     1, 0, 0,
                     0, 0, 1,
@@ -143,7 +138,6 @@ module Curves {
 			geometry.addAttribute('uv', new THREE.BufferAttribute(new Float32Array(uv), 2));           
             geometry.addAttribute('color', new THREE.BufferAttribute(new Float32Array(color), 3));
             geometry.addAttribute('segmentIndex', new THREE.BufferAttribute(new Float32Array(segmentIndex), 1));
-            geometry.addAttribute('segmentDelta', new THREE.BufferAttribute(new Float32Array(segmentDelta), 1));
             
             this.mesh.geometry.dispose();
             // BufferGeometry not convertable to Geometry? Hence cast below.

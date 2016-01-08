@@ -15,9 +15,6 @@
                 varying vec3 vColor;
             #endif
             
-            attribute float segmentDelta;
-            varying float vSegmentDelta;
-            
             attribute float segmentIndex;
             
             varying vec2 vP0;
@@ -30,7 +27,6 @@
             
             void main() {
                 vColor = color;
-                vSegmentDelta = segmentDelta;
                 vLocationInSegment = uv;
                 
                 int point0Index = int(segmentIndex);
@@ -53,7 +49,6 @@
                 varying vec3 vColor;
             #endif
             
-            varying float vSegmentDelta;
             varying vec2 vP0;
             varying vec2 vP1;
             varying vec2 vT0;
