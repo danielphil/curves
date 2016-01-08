@@ -49,14 +49,13 @@ $(function () {
 
 	curve.generateCurve();
 	
-	curveEditView = new Curves.CurveEditView($('#content').get(0));
+	curveEditView = new Curves.CurveEditView($('#content').get(0), curve);
     if (false) {
         canvasCurveRenderView = new Curves.CanvasCurveRenderView($("#render").get(0));
     } else {
 	   curveRenderView = new Curves.CurveRenderView($("#render").get(0));
     }
 	
-	curveEditView.setCurve(curve);
 	curveEditView.render();
 	
     if (canvasCurveRenderView) {
@@ -68,4 +67,11 @@ $(function () {
     }
 	
 	$("#loadSourceImage").on("change", loadImage);
+    
+    curve.onChangeHandler(() => {
+        curve.generateTangentsNaturalSpline();
+        curve.generateCurve();
+        curveEditView.render();
+        // Need to update the curve render view too
+    });
 });

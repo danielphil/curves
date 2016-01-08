@@ -10,12 +10,17 @@ module Curves {
 		points: HermiteControlPoint[] = [];
 		curvePoints: THREE.Vector2[] = [];
 		curveTangents: THREE.Vector2[] = [];
+        private onChangeCallback: () => void;
 		
 		addPoint(x: number, y: number, x_t: number, y_t: number) {
 			this.points.push({
 				position: new THREE.Vector2(x, y),
 				tangent: new THREE.Vector2(x_t, y_t)
 			});
+            
+            if (this.onChangeCallback) {
+                this.onChangeCallback();
+            }
 		}
 		
 		private static clamp(val: number) : number {
@@ -253,5 +258,9 @@ module Curves {
 				}
 			}
 		}
+        
+        onChangeHandler(callback: () => void) {
+            this.onChangeCallback = callback;
+        }
 	}
 }

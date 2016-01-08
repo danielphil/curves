@@ -9,15 +9,13 @@ module Curves {
 	{
 		private image = new Image();
 		private curve = new Curves.Hermite();
-		private addPointTool = new Curves.AddPointTool();
+		private addPointTool: AddPointTool;
         
-        constructor(container: HTMLElement) {
+        constructor(container: HTMLElement, curve: Hermite) {
             super(container);
+            this.curve = curve;
+            this.addPointTool = new Curves.AddPointTool(curve, (x, y) => new THREE.Vector2(x, y).sub(this.imageOffset()));
         }
-        
-		setCurve(curve: Curves.Hermite) {
-			this.curve = curve;
-		}
 		
 		setImage(image: HTMLImageElement) {
 			this.image = image;
@@ -35,9 +33,7 @@ module Curves {
                 return;
             }
 			
-			var originToCanvasCentre = new THREE.Vector2(this.canvas.width / 2, this.canvas.height / 2);
-			var imageCentreToOrigin = new THREE.Vector2(-this.image.width / 2, -this.image.height / 2);
-			var translation = new THREE.Vector2().copy(originToCanvasCentre).add(imageCentreToOrigin);
+			var translation = this.imageOffset();
 			context.save();
 			context.translate(translation.x, translation.y);
 			
@@ -83,6 +79,12 @@ module Curves {
             
             context.restore();
 		}
+        
+        private imageOffset() {
+            var originToCanvasCentre = new THREE.Vector2(this.canvas.width / 2, this.canvas.height / 2);
+			var imageCentreToOrigin = new THREE.Vector2(-this.image.width / 2, -this.image.height / 2);
+			return new THREE.Vector2().copy(originToCanvasCentre).add(imageCentreToOrigin);
+        }
         
         activateAddPoint() {
             if (!this.image.src) {
