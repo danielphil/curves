@@ -1,6 +1,5 @@
 /// <reference path="../typings/threejs/three.d.ts" />
 /// <reference path="../typings/jquery.d.ts" />
-/// <reference path="CanvasCurveView.ts" />
 /// <reference path="CanvasCurveRenderView.ts" />
 /// <reference path="CurveRenderView.ts" />
 /// <reference path="CurveEditView.ts" />
@@ -39,11 +38,7 @@ $(function () {
 	}
 	
 	var curve = new Curves.Hermite();
-/*
-    curve.addPoint(100, 100, 0, 10);
-	curve.addPoint(200, 100, 0, 10);
-    */
-	
+
     curve.addPoint(100, 100, 0, 10);
 	curve.addPoint(150, 150, -10, -10);
     curve.addPoint(170, 90, 20, 10);
