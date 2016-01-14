@@ -3,6 +3,7 @@
 /// <reference path="AddPointTool.ts" />
 /// <reference path="CanvasView.ts" />
 /// <reference path="Hermite.ts" />
+/// <reference path="PanTool.ts" />
 
 module Curves {
 	export class CurveEditView extends CanvasView
@@ -10,19 +11,27 @@ module Curves {
 		private image = new Image();
 		private curve = new Curves.Hermite();
 		private addPointTool: AddPointTool;
+        private panTool: PanTool;
+        private pan = new THREE.Vector2();
         
         constructor(container: HTMLElement, curve: Hermite) {
             super(container);
             this.curve = curve;
             this.addPointTool = new Curves.AddPointTool(curve, (x, y) => new THREE.Vector2(x, y).sub(this.imageOffset()));
+            this.panTool = new Curves.PanTool((pan) => {
+                this.pan.add(pan);
+                this.render();
+            });
         }
 		
 		setImage(image: HTMLImageElement) {
 			this.image = image;
-			this.render();
             this.activateAddPoint();
+            this.pan = new THREE.Vector2();
+            
+            this.render();
 		}
-		
+        
 		render() {
             var context = this.canvas.getContext("2d");
             context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -83,7 +92,7 @@ module Curves {
         private imageOffset() {
             var originToCanvasCentre = new THREE.Vector2(this.canvas.width / 2, this.canvas.height / 2);
 			var imageCentreToOrigin = new THREE.Vector2(-this.image.width / 2, -this.image.height / 2);
-			return new THREE.Vector2().copy(originToCanvasCentre).add(imageCentreToOrigin);
+			return new THREE.Vector2().copy(this.pan).add(originToCanvasCentre).add(imageCentreToOrigin);
         }
         
         activateAddPoint() {
@@ -92,6 +101,14 @@ module Curves {
             }
             
             this.changeActiveTool(this.addPointTool);
+        }
+        
+        activatePan() {
+            if (!this.image.src) {
+                return;
+            }
+            
+            this.changeActiveTool(this.panTool);
         }
 	}
 }

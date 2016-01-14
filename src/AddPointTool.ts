@@ -9,6 +9,8 @@ module Curves
         private curve: Hermite;
         private coordConversionCallback: (x: number, y: number) => THREE.Vector2;
         
+        private mouseHandler = (e: JQueryEventObject) => this.handleClick(e);
+        
         constructor(curve: Hermite, coordConversionCallback: (x: number, y: number) => THREE.Vector2) {
             this.curve = curve;
             this.coordConversionCallback = coordConversionCallback;
@@ -16,11 +18,11 @@ module Curves
         
         attach(container: HTMLElement) {
             this.container = container;
-            $(this.container).on("click", (e) => this.handleClick(e));
+            $(this.container).on("click", this.mouseHandler);
         }
         
         detach() {
-            $(this.container).off("click", (e) => this.handleClick(e));
+            $(this.container).off("click", this.mouseHandler);
         }
         
         private handleClick(e: JQueryEventObject) {

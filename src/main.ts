@@ -74,4 +74,12 @@ $(function () {
         curveEditView.render();
         // Need to update the curve render view too
     });
+    
+    $("#panButton").click(function () {
+        curveEditView.activatePan();
+    });
+    
+    $("#addPointsButton").click(function () {
+        curveEditView.activateAddPoint();
+    });
 });
