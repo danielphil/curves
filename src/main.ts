@@ -72,7 +72,7 @@ $(function () {
         curve.generateTangentsNaturalSpline();
         curve.generateCurve();
         curveEditView.render();
-        // Need to update the curve render view too
+        curveRenderView.setCurve(curve);
     });
     
     $("#panButton").click(function () {
@@ -82,4 +82,8 @@ $(function () {
     $("#addPointsButton").click(function () {
         curveEditView.activateAddPoint();
     });
+    
+    $("#clearCurveButton").click(function () {
+        curve.clearPoints();
+    })
 });

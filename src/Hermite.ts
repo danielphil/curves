@@ -23,6 +23,16 @@ module Curves {
             }
 		}
 		
+        clearPoints() {
+            this.points = [];
+            this.curvePoints = [];
+            this.curveTangents = [];
+            
+            if (this.onChangeCallback) {
+                this.onChangeCallback();
+            }
+        }
+        
 		private static clamp(val: number) : number {
 			if (val < 0) {
 				return 0;
@@ -155,13 +165,13 @@ module Curves {
 			return Hermite.solveTridiagonalMatrix(a, b, c, d);
 		}
 		
-		private static generateTangentsNaturalSpline1d(points: Float32Array) {
+		private static generateTangentsNaturalSpline1d(points: Float32Array) : Float32Array {
 			// TODO: tidy up the unnecessary calculations in here
 			
 			var n = points.length;
 			if (n < 3) {
 				// Need three points to be able to interpolate
-				return;
+				return new Float32Array(0);
 			}
 			
 			// Create [a] array of form [0 1 1 1 1 1] 
