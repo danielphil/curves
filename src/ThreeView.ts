@@ -6,16 +6,7 @@ module Curves {
 	export abstract class ThreeView extends View
 	{
 		protected scene = new THREE.Scene();
-		
-		protected camera = new THREE.OrthographicCamera(
-			window.innerWidth / -500,
-			window.innerWidth / 500,
-			window.innerHeight / -500,
-			window.innerHeight / 500,
-			1,
-			1000
-		);
-		
+		protected camera : THREE.OrthographicCamera;		
 		protected renderer = new THREE.WebGLRenderer();
 		
 		constructor(container: HTMLElement) {
@@ -27,11 +18,11 @@ module Curves {
 			this.renderer.setSize(width, height);
 			this.container.appendChild(this.renderer.domElement);
 			
-			this.resize();
+			this.resize(true);
 			this.render();
 		}
 		
-		protected resize() {
+		protected resize(initialResize: boolean) {
 			var width = $(this.container).width();
 			var height = $(this.container).height();
 			
@@ -43,7 +34,7 @@ module Curves {
 				1,
 				1000
 			);
-			
+            
 			this.renderer.setSize(width, height);
 			this.render();
 		}

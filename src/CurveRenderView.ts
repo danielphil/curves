@@ -12,26 +12,31 @@ module Curves {
         private panTool: PanTool;
         private zoomTool: ZoomTool;
         
+        private pan = new THREE.Vector3(0, 0, 1.5);
+        private zoom = 1.0;
+        
         constructor(container: HTMLElement) {
             super(container);
             
             this.panTool = new Curves.PanTool((pan) => {
-               var scaling = 0.01 / this.camera.zoom;
-               this.camera.position.add(new THREE.Vector3(-pan.x * scaling, -pan.y * scaling, 0));
+               var scaling = 0.01 / this.zoom;
+               this.pan.add(new THREE.Vector3(-pan.x * scaling, -pan.y * scaling, 0));
+               this.updateCamera(this.camera);
                this.render(); 
             });
             
             this.zoomTool = new Curves.ZoomTool((zoom) => {
                 // Double zoom for every 100 pixels of movement
                 var zoomStep = Math.pow(2, 1 / 100);
-                var currentStep = Math.log(this.camera.zoom) / Math.log(zoomStep);
+                var currentStep = Math.log(this.zoom) / Math.log(zoomStep);
                 currentStep += zoom;
-                this.camera.zoom = Math.pow(zoomStep, currentStep);
-                this.camera.zoom = Math.max(this.camera.zoom, 0.01);
-                
-                this.camera.updateProjectionMatrix();
+                this.zoom = Math.pow(zoomStep, currentStep);
+                this.zoom = Math.max(this.zoom, 0.01);
+                this.updateCamera(this.camera);
                 this.render();
             })
+            
+            this.updateCamera(this.camera);
             
             // Create dummy geometry for now
             var geometry = this.buildGeometry([], [], [], []);
@@ -39,10 +44,6 @@ module Curves {
             
 			this.mesh = new THREE.Mesh(geometry, material);
 			this.scene.add(this.mesh);
-            
-            this.camera.position.z = 1.5;
-            this.camera.zoom = 1;
-			this.camera.updateProjectionMatrix();
             
             this.renderer.sortObjects = false;
             this.render();
@@ -64,9 +65,9 @@ module Curves {
         setCurve(curve: Curves.Hermite) {
 			this.curve = curve;
             
-            this.camera.position.set(0, 0, 1.5);
-            this.camera.zoom = 1;
-			this.camera.updateProjectionMatrix();
+            this.pan.set(0, 0, 1.5);
+            this.zoom = 1;
+            this.updateCamera(this.camera);
             
             this.updateScene();
 		}
@@ -77,6 +78,23 @@ module Curves {
         
         activateZoom() {
             this.changeActiveTool(this.zoomTool);
+        }
+        
+        protected resize(initialResize: boolean) {
+            super.resize(initialResize);
+            
+            // The view has not been completely initialised on initial resize, so
+            // don't try to update the camera here
+            if (!initialResize) {
+                this.updateCamera(this.camera);
+                this.render();
+            }
+        }
+        
+        protected updateCamera(camera: THREE.OrthographicCamera) {
+            camera.position.copy(this.pan);
+            camera.zoom = this.zoom;
+            camera.updateProjectionMatrix();
         }
         
         private updateScene() {

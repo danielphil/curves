@@ -7,10 +7,10 @@ module Curves
         
 		constructor(container: HTMLElement) {
 			this.container = container;
-			$(window).resize(() => this.resize());
+			$(window).resize(() => this.resize(false));
 		}
 		
-		protected abstract resize() : void;
+		protected abstract resize(initialResize: boolean) : void;
 		abstract render() : void;
         
         protected changeActiveTool(newTool : Tool) {
