@@ -33,6 +33,7 @@ $(function () {
     var useLinearCurveInterpolation = false;
     
 	curveImage.onload = function () {
+        curve.clearPoints();
 		curveEditView.setImage(curveImage);
         if (canvasCurveRenderView) {
             canvasCurveRenderView.setImage(curveImage);
@@ -105,8 +106,20 @@ $(function () {
         
         if (useLinearCurveInterpolation) {
             $("#linearCurveInterpButton").addClass("btn-success");
+            $("#showEditTangentsButton").attr("disabled", "disabled");
         } else {
             $("#linearCurveInterpButton").removeClass("btn-success");
+            $("#showEditTangentsButton").removeAttr("disabled");
+        }
+    });
+    
+    $("#showEditTangentsButton").click(function () {
+        var enabled = curveEditView.toggleShowTangentsAndControlPoints();
+        
+        if (enabled) {
+            $("#showEditTangentsButton").addClass("btn-success");
+        } else {
+            $("#showEditTangentsButton").removeClass("btn-success");
         }
     });
 });

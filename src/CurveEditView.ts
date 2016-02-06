@@ -14,6 +14,7 @@ module Curves {
         private panTool: PanTool;
         private pan = new THREE.Vector2();
         private useLinearCurveInterpolation = false;
+        private showTangentsAndControlPoints = false;
         
         constructor(container: HTMLElement, curve: Hermite) {
             super(container);
@@ -56,7 +57,7 @@ module Curves {
 				var rectSize = 5;
 				context.fillRect(point.position.x - rectSize / 2, point.position.y - rectSize / 2, rectSize, rectSize);
 				
-                if (!this.useLinearCurveInterpolation) {
+                if (!this.useLinearCurveInterpolation && this.showTangentsAndControlPoints) {
                     context.strokeStyle = "black";
                     context.beginPath();
                     context.moveTo(point.position.x, point.position.y);
@@ -79,6 +80,12 @@ module Curves {
             this.render();
         }
         
+        toggleShowTangentsAndControlPoints() : boolean {
+            this.showTangentsAndControlPoints = !this.showTangentsAndControlPoints;
+            this.render();
+            return this.showTangentsAndControlPoints;
+        }
+        
         private drawLinearCurve(context: CanvasRenderingContext2D) {
             if (this.curve.points.length < 2) {
                 return;
@@ -97,29 +104,33 @@ module Curves {
         }
         
         private drawHermiteCurve(context: CanvasRenderingContext2D) {
-            if (this.curve.curvePoints.length >= 2) {
-				context.strokeStyle = "red";
-				context.beginPath();
-				var p0: THREE.Vector2 = this.curve.curvePoints[0];
-				context.moveTo(p0.x, p0.y);
-				
-				for (var i = 1; i < this.curve.curvePoints.length; i++) {
-					context.lineTo(this.curve.curvePoints[i].x, this.curve.curvePoints[i].y);
-				}
-		
-				context.stroke();
-				
-				context.strokeStyle = "blue";
-				for (var i = 0; i < this.curve.curveTangents.length; i++) {
-					context.beginPath();
-					var t0 = this.curve.curvePoints[i];
-					var scaledTangent = new THREE.Vector2().copy(this.curve.curveTangents[i]).multiplyScalar(10);
-					var t1 = new THREE.Vector2().copy(t0).add(scaledTangent);
-					context.moveTo(t0.x, t0.y);
-					context.lineTo(t1.x, t1.y);
-					context.stroke();
-				}
-			}
+            if (this.curve.curvePoints.length < 2) {
+                return; 
+            }
+                
+            context.strokeStyle = "red";
+            context.beginPath();
+            var p0: THREE.Vector2 = this.curve.curvePoints[0];
+            context.moveTo(p0.x, p0.y);
+            
+            for (var i = 1; i < this.curve.curvePoints.length; i++) {
+                context.lineTo(this.curve.curvePoints[i].x, this.curve.curvePoints[i].y);
+            }
+    
+            context.stroke();
+            
+            if (this.showTangentsAndControlPoints) {
+                context.strokeStyle = "blue";
+                for (var i = 0; i < this.curve.curveTangents.length; i++) {
+                    context.beginPath();
+                    var t0 = this.curve.curvePoints[i];
+                    var scaledTangent = new THREE.Vector2().copy(this.curve.curveTangents[i]).multiplyScalar(10);
+                    var t1 = new THREE.Vector2().copy(t0).add(scaledTangent);
+                    context.moveTo(t0.x, t0.y);
+                    context.lineTo(t1.x, t1.y);
+                    context.stroke();
+                }
+            }
         }
         
         private imageOffset() {

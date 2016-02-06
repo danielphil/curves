@@ -112,7 +112,7 @@ module Curves {
             var imageWidthPixels = 0;
             var geometry: THREE.BufferGeometry;
             var material: THREE.Material;
-            if (curve && curve.points.length >= 3 && texture) {
+            if (curve && curve.points.length > 3 && texture) {
                 // We have a valid curve and image, so we can render something
                 imageHeightPixels = texture.image.height;
                 imageWidthPixels = texture.image.width;
