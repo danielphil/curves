@@ -15,6 +15,8 @@ module Curves {
         private pan = new THREE.Vector3(0, 0, 1.5);
         private zoom = 1.0;
         
+        private useLinearCurveInterpolation = false;
+        
         constructor(container: HTMLElement) {
             super(container);
             
@@ -80,6 +82,11 @@ module Curves {
             this.changeActiveTool(this.zoomTool);
         }
         
+        toggleLinearCurveInterpolation(useLinear: boolean) : void {
+            this.useLinearCurveInterpolation = useLinear;
+            this.updateScene();
+        }
+        
         protected resize(initialResize: boolean) {
             super.resize(initialResize);
             
@@ -110,7 +117,7 @@ module Curves {
                 imageHeightPixels = texture.image.height;
                 imageWidthPixels = texture.image.width;
                 geometry = this.generateGeometryFromCurve(curve, imageHeightPixels);
-                material = this.createCurveRenderMaterial(curve, texture);
+                material = this.createCurveRenderMaterial(curve, texture, this.useLinearCurveInterpolation);
             } else {
                 // We don't have a curve and a texture so we can't render anything
                 geometry = this.buildGeometry([], [], [], []);
@@ -211,7 +218,7 @@ module Curves {
             });
         }
         
-        private createCurveRenderMaterial(curve: Hermite, texture: THREE.Texture) : THREE.Material {
+        private createCurveRenderMaterial(curve: Hermite, texture: THREE.Texture, useLinearCurveInterpolation: boolean) : THREE.Material {
             var imageHeightPixels = texture.image.height;
             var imageWidthPixels = texture.image.width;
             
@@ -223,7 +230,8 @@ module Curves {
                     uTextureDimensions: { type: "v2", value: new THREE.Vector2(imageWidthPixels, imageHeightPixels) }
                 },
                 defines: {
-                    NO_OF_CONTROL_POINTS: curve.points.length
+                    NO_OF_CONTROL_POINTS: curve.points.length,
+                    LINEAR_CURVE_INTERPOLATION: useLinearCurveInterpolation
                 },
                 vertexShader: document.getElementById('curve-render-vertex-shader').textContent,
                 fragmentShader: document.getElementById('curve-render-fragment-shader').textContent,

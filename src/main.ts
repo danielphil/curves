@@ -30,6 +30,8 @@ function loadImage(e: any) {
 }
 
 $(function () {
+    var useLinearCurveInterpolation = false;
+    
 	curveImage.onload = function () {
 		curveEditView.setImage(curveImage);
         if (canvasCurveRenderView) {
@@ -94,4 +96,17 @@ $(function () {
     $("#clearCurveButton").click(function () {
         curve.clearPoints();
     })
+    
+    $("#linearCurveInterpButton").click(function () {
+        useLinearCurveInterpolation = !useLinearCurveInterpolation;
+        
+        curveEditView.toggleLinearCurveInterpolation(useLinearCurveInterpolation);
+        curveRenderView.toggleLinearCurveInterpolation(useLinearCurveInterpolation);
+        
+        if (useLinearCurveInterpolation) {
+            $("#linearCurveInterpButton").addClass("btn-success");
+        } else {
+            $("#linearCurveInterpButton").removeClass("btn-success");
+        }
+    });
 });

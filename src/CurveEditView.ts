@@ -13,6 +13,7 @@ module Curves {
 		private addPointTool: AddPointTool;
         private panTool: PanTool;
         private pan = new THREE.Vector2();
+        private useLinearCurveInterpolation = false;
         
         constructor(container: HTMLElement, curve: Hermite) {
             super(container);
@@ -50,19 +51,53 @@ module Curves {
                 context.drawImage(this.image, 0, 0);
             }	
 			
-			this.curve.points.forEach(function (point) {
+			this.curve.points.forEach((point) => {
 				context.fillStyle = "black";
 				var rectSize = 5;
 				context.fillRect(point.position.x - rectSize / 2, point.position.y - rectSize / 2, rectSize, rectSize);
 				
-				context.strokeStyle = "black";
-				context.beginPath();
-				context.moveTo(point.position.x, point.position.y);
-				context.lineTo(point.position.x + point.tangent.x, point.position.y + point.tangent.y);
-				context.stroke();
+                if (!this.useLinearCurveInterpolation) {
+                    context.strokeStyle = "black";
+                    context.beginPath();
+                    context.moveTo(point.position.x, point.position.y);
+                    context.lineTo(point.position.x + point.tangent.x, point.position.y + point.tangent.y);
+                    context.stroke();
+                }
 			});
 			
-			if (this.curve.curvePoints.length >= 2) {
+			if (this.useLinearCurveInterpolation) {
+                this.drawLinearCurve(context);
+            } else {
+                this.drawHermiteCurve(context);
+            }
+            
+            context.restore();
+		}
+        
+        toggleLinearCurveInterpolation(useLinear: boolean) {
+            this.useLinearCurveInterpolation = useLinear;
+            this.render();
+        }
+        
+        private drawLinearCurve(context: CanvasRenderingContext2D) {
+            if (this.curve.points.length < 2) {
+                return;
+            }
+            
+            context.strokeStyle = "red";
+            context.beginPath();
+            var p0: THREE.Vector2 = this.curve.points[0].position;
+            context.moveTo(p0.x, p0.y);
+            
+            for (var i = 1; i < this.curve.points.length; i++) {
+                context.lineTo(this.curve.points[i].position.x, this.curve.points[i].position.y);
+            }
+    
+            context.stroke();
+        }
+        
+        private drawHermiteCurve(context: CanvasRenderingContext2D) {
+            if (this.curve.curvePoints.length >= 2) {
 				context.strokeStyle = "red";
 				context.beginPath();
 				var p0: THREE.Vector2 = this.curve.curvePoints[0];
@@ -85,9 +120,7 @@ module Curves {
 					context.stroke();
 				}
 			}
-            
-            context.restore();
-		}
+        }
         
         private imageOffset() {
             var originToCanvasCentre = new THREE.Vector2(this.canvas.width / 2, this.canvas.height / 2);
