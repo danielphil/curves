@@ -50,7 +50,7 @@ module Curves {
 			this.scene.add(this.mesh);
             
             this.camera.position.z = 1.5;
-            this.camera.zoom = 2;
+            this.camera.zoom = 1;
 			this.camera.updateProjectionMatrix();
             
             this.renderer.sortObjects = false;
@@ -72,6 +72,11 @@ module Curves {
         
         setCurve(curve: Curves.Hermite) {
 			this.curve = curve;
+            
+            this.camera.position.set(0, 0, 1.5);
+            this.camera.zoom = 1;
+			this.camera.updateProjectionMatrix();
+            
             this.updateScene();
 		}
         
