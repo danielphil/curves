@@ -35,13 +35,7 @@ module Curves {
             
             // Create dummy geometry for now
             var geometry = this.buildGeometry([], [], [], []);
-            
-			var material = new THREE.MeshBasicMaterial( {
-                vertexColors: THREE.VertexColors,
-                wireframe: true,
-                depthTest: false,
-                depthWrite: false
-            });
+			var material = this.createDummyMaterial();
             
 			this.mesh = new THREE.Mesh(geometry, material);
 			this.scene.add(this.mesh);
@@ -87,29 +81,41 @@ module Curves {
         
         private updateScene() {
             var curve = this.curve;
-            if (!curve || curve.points.length < 3) {
-                // TODO: Should set up a default scene here instead
-                return;
-            }
-            
             var texture = this.texture;
-            if (!texture) {
-                // TODO: Again, should set up a default scene here if there's no texture available
-                return;
+            
+            var imageHeightPixels = 0;
+            var imageWidthPixels = 0;
+            var geometry: THREE.BufferGeometry;
+            var material: THREE.Material;
+            if (curve && curve.points.length >= 3 && texture) {
+                // We have a valid curve and image, so we can render something
+                imageHeightPixels = texture.image.height;
+                imageWidthPixels = texture.image.width;
+                geometry = this.generateGeometryFromCurve(curve, imageHeightPixels);
+                material = this.createCurveRenderMaterial(curve, texture);
+            } else {
+                // We don't have a curve and a texture so we can't render anything
+                geometry = this.buildGeometry([], [], [], []);
+                material = this.createDummyMaterial();
             }
             
-            var texWidth = texture.image.width;
-			
+            this.mesh.geometry.dispose();
+            // BufferGeometry not convertable to Geometry? Hence cast below.
+            this.mesh.geometry = <any>geometry;
             
+            this.mesh.material.dispose();
+            this.mesh.material = material;
+            
+            this.render();
+        }
+        
+        private generateGeometryFromCurve(curve: Hermite, imageHeightPixels: number) : THREE.BufferGeometry {
             // Get the approximate length of each segment of the curve
             var lengths: number[] = [];
             for (var i = 0; i < curve.points.length - 1; i++) {
                 lengths.push(Curves.Hermite.approxSegmentLength(curve.points[i], curve.points[i + 1]));
             }
             
-            var imageHeightPixels = texture.image.height;
-            var imageWidthPixels = texture.image.width;
-
             var totalLengthPixels = lengths.reduce(function (a, b) { return a + b; });
             
             // Hardcoded scaling factor here to determine the width of the curve geometry
@@ -164,30 +170,7 @@ module Curves {
                 x += length;
             });
             
-            var geometry = this.buildGeometry(vertices, uv, color, segmentIndex);
-            
-            this.mesh.geometry.dispose();
-            // BufferGeometry not convertable to Geometry? Hence cast below.
-            this.mesh.geometry = <any>geometry;
-            
-            this.mesh.material.dispose();
-            this.mesh.material = new THREE.ShaderMaterial({
-                uniforms: {
-                    uPoints: { type: "v2v", value: curve.points.map(function (cp) { return cp.position; }) },
-                    uTangents: { type: "v2v", value: curve.points.map(function (cp) { return cp.tangent; }) },
-                    uTexture: { type: "t", value: texture },
-                    uTextureDimensions: { type: "v2", value: new THREE.Vector2(imageWidthPixels, imageHeightPixels) }
-                },
-                defines: {
-                    NO_OF_CONTROL_POINTS: curve.points.length
-                },
-                vertexShader: document.getElementById('curve-render-vertex-shader').textContent,
-                fragmentShader: document.getElementById('curve-render-fragment-shader').textContent,
-                wireframe: false,
-                vertexColors: THREE.VertexColors
-            });
-            
-            this.render();
+            return this.buildGeometry(vertices, uv, color, segmentIndex);
         }
         
         private buildGeometry(vertices: number[], uv: number[], color: number[], segmentIndex: number[]) : THREE.BufferGeometry
@@ -199,6 +182,35 @@ module Curves {
             geometry.addAttribute('segmentIndex', new THREE.BufferAttribute(new Float32Array(segmentIndex), 1));
             
             return geometry;
+        }
+        
+        private createDummyMaterial() : THREE.Material {
+            return new THREE.MeshBasicMaterial({
+                vertexColors: THREE.VertexColors,
+                wireframe: true,
+                depthTest: false,
+                depthWrite: false
+            });
+        }
+        
+        private createCurveRenderMaterial(curve: Hermite, texture: THREE.Texture) : THREE.Material {
+            var imageHeightPixels = texture.image.height;
+            var imageWidthPixels = texture.image.width;
+            
+            return new THREE.ShaderMaterial({
+                uniforms: {
+                    uPoints: { type: "v2v", value: curve.points.map(function (cp) { return cp.position; }) },
+                    uTangents: { type: "v2v", value: curve.points.map(function (cp) { return cp.tangent; }) },
+                    uTexture: { type: "t", value: texture },
+                    uTextureDimensions: { type: "v2", value: new THREE.Vector2(imageWidthPixels, imageHeightPixels) }
+                },
+                defines: {
+                    NO_OF_CONTROL_POINTS: curve.points.length
+                },
+                vertexShader: document.getElementById('curve-render-vertex-shader').textContent,
+                fragmentShader: document.getElementById('curve-render-fragment-shader').textContent,
+                vertexColors: THREE.VertexColors
+            });
         }
     }
 }
