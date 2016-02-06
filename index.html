@@ -11,10 +11,6 @@
             uniform vec2 uPoints[NO_OF_CONTROL_POINTS];
             uniform vec2 uTangents[NO_OF_CONTROL_POINTS];
             
-            #ifdef USE_COLOR
-                varying vec3 vColor;
-            #endif
-            
             attribute float segmentIndex;
             
             varying vec2 vP0;
@@ -26,7 +22,6 @@
             varying vec2 vLocationInSegment;
             
             void main() {
-                vColor = color;
                 vLocationInSegment = uv;
                 
                 int point0Index = int(segmentIndex);
@@ -44,10 +39,6 @@
         <script id="curve-render-fragment-shader" type="x-shader/x-fragment">
             uniform sampler2D uTexture;
             uniform vec2 uTextureDimensions;
-            
-            #ifdef USE_COLOR
-                varying vec3 vColor;
-            #endif
             
             varying vec2 vP0;
             varying vec2 vP1;
