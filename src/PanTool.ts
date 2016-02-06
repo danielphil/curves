@@ -36,6 +36,10 @@ module Curves
             this.mouseDown = false;
         }
         
+        name() {
+            return "pan";
+        }
+        
         private handleMouseDown(e: JQueryEventObject) {
             // left button only for now
             if (e.which == 1) {

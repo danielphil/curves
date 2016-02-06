@@ -38,6 +38,9 @@ $(function () {
         if (canvasCurveRenderView) {
             canvasCurveRenderView.setImage(curveImage);
         }
+        
+        curveEditView.activateAddPoint();
+        curveRenderView.activateZoom();
 	}
 	
 	var curve = new Curves.Hermite();
@@ -52,11 +55,11 @@ $(function () {
 
 	curve.generateCurve();
 	
-	curveEditView = new Curves.CurveEditView($('#content').get(0), curve);
+	curveEditView = new Curves.CurveEditView($('#content').get(0), curve, onCurveEditToolChange);
     if (false) {
-        canvasCurveRenderView = new Curves.CanvasCurveRenderView($("#render").get(0));
+        canvasCurveRenderView = new Curves.CanvasCurveRenderView($("#render").get(0), onCurveRenderToolChange);
     } else {
-	   curveRenderView = new Curves.CurveRenderView($("#render").get(0));
+	   curveRenderView = new Curves.CurveRenderView($("#render").get(0), onCurveRenderToolChange);
     }
 	
 	curveEditView.render();
@@ -122,4 +125,24 @@ $(function () {
             $("#showEditTangentsButton").removeClass("btn-success");
         }
     });
+    
+    function onCurveEditToolChange(toolname: string) {
+        if (toolname == "pan") {
+            $("#panButton").addClass("btn-primary");
+            $("#addPointsButton").removeClass("btn-primary");
+        } else if (toolname == "addPoint") {
+            $("#panButton").removeClass("btn-primary");
+            $("#addPointsButton").addClass("btn-primary");
+        }
+    }
+    
+    function onCurveRenderToolChange(toolname: string) {
+        if (toolname == "pan") {
+            $("#renderPanButton").addClass("btn-primary");
+            $("#renderZoomButton").removeClass("btn-primary");
+        } else if (toolname == "zoom") {
+            $("#renderPanButton").removeClass("btn-primary");
+            $("#renderZoomButton").addClass("btn-primary");
+        }
+    }
 });

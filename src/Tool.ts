@@ -4,5 +4,6 @@ module Curves
     {
         attach(container: HTMLElement): void;
         detach(): void;
+        name(): string;
     }
 }

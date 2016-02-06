@@ -17,8 +17,8 @@ module Curves {
         
         private useLinearCurveInterpolation = false;
         
-        constructor(container: HTMLElement) {
-            super(container);
+        constructor(container: HTMLElement, onToolChangeCallback: (toolName: string) => void) {
+            super(container, onToolChangeCallback);
             
             this.panTool = new Curves.PanTool((pan) => {
                var scaling = 0.01 / this.zoom;

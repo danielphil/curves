@@ -4,9 +4,11 @@ module Curves
 	{
 		protected container: HTMLElement;
         protected activeTool: Tool;
+        private onToolChangeCallback: (toolName: string) => void;
         
-		constructor(container: HTMLElement) {
+		constructor(container: HTMLElement, onToolChangeCallback: (toolName: string) => void) {
 			this.container = container;
+            this.onToolChangeCallback = onToolChangeCallback;
 			$(window).resize(() => this.resize(false));
 		}
 		
@@ -20,6 +22,7 @@ module Curves
             }
             this.activeTool = newTool;
             newTool.attach(this.container);
+            this.onToolChangeCallback(newTool.name());
         }
 	}
 }

@@ -9,8 +9,8 @@ module Curves {
 		protected camera : THREE.OrthographicCamera;		
 		protected renderer = new THREE.WebGLRenderer();
 		
-		constructor(container: HTMLElement) {
-			super(container);
+		constructor(container: HTMLElement, onToolChangeCallback: (toolName: string) => void) {
+			super(container, onToolChangeCallback);
 			
 			var width = $(container).width();
 			var height = $(container).height();

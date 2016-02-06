@@ -16,8 +16,8 @@ module Curves {
         private useLinearCurveInterpolation = false;
         private showTangentsAndControlPoints = false;
         
-        constructor(container: HTMLElement, curve: Hermite) {
-            super(container);
+        constructor(container: HTMLElement, curve: Hermite, onToolChangeCallback: (toolName: string) => void) {
+            super(container, onToolChangeCallback);
             this.curve = curve;
             this.addPointTool = new Curves.AddPointTool(curve, (x, y) => new THREE.Vector2(x, y).sub(this.imageOffset()));
             this.panTool = new Curves.PanTool((pan) => {
@@ -28,7 +28,6 @@ module Curves {
 		
 		setImage(image: HTMLImageElement) {
 			this.image = image;
-            this.activateAddPoint();
             this.pan = new THREE.Vector2();
             
             this.render();
