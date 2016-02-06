@@ -1,5 +1,6 @@
 /// <reference path="Hermite.ts" />
 /// <reference path="ThreeView.ts" />
+/// <reference path="ZoomTool.ts" />
 
 module Curves {
     export class CurveRenderView extends ThreeView
@@ -8,8 +9,29 @@ module Curves {
         private mesh: THREE.Mesh;
         private texture: THREE.Texture;
 
+        private panTool: PanTool;
+        private zoomTool: ZoomTool;
+        
         constructor(container: HTMLElement) {
             super(container);
+            
+            this.panTool = new Curves.PanTool((pan) => {
+               var scaling = 0.01 / this.camera.zoom;
+               this.camera.position.add(new THREE.Vector3(-pan.x * scaling, -pan.y * scaling, 0));
+               this.render(); 
+            });
+            
+            this.zoomTool = new Curves.ZoomTool((zoom) => {
+                // Double zoom for every 100 pixels of movement
+                var zoomStep = Math.pow(2, 1 / 100);
+                var currentStep = Math.log(this.camera.zoom) / Math.log(zoomStep);
+                currentStep += zoom;
+                this.camera.zoom = Math.pow(zoomStep, currentStep);
+                this.camera.zoom = Math.max(this.camera.zoom, 0.01);
+                
+                this.camera.updateProjectionMatrix();
+                this.render();
+            })
             
             // Create a dummy geometry for now
             var geometry = new THREE.BufferGeometry();
@@ -52,6 +74,14 @@ module Curves {
 			this.curve = curve;
             this.updateScene();
 		}
+        
+        activatePan() {
+            this.changeActiveTool(this.panTool);
+        }
+        
+        activateZoom() {
+            this.changeActiveTool(this.zoomTool);
+        }
         
         private updateScene() {
             var curve = this.curve;

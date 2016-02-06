@@ -79,6 +79,14 @@ $(function () {
         curveEditView.activatePan();
     });
     
+    $("#renderPanButton").click(function () {
+        curveRenderView.activatePan();
+    });
+    
+    $("#renderZoomButton").click(function () {
+        curveRenderView.activateZoom();
+    });
+    
     $("#addPointsButton").click(function () {
         curveEditView.activateAddPoint();
     });
