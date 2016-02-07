@@ -142,13 +142,19 @@ module Curves {
 			}
 			
 			// Create [a] array of form [0 1 1 1 1 0] 
-			var a = new Float32Array(n).fill(1);
+			var a = new Float32Array(n);
 			a[0] = 0;
+            for (var i = 1; i < n - 1; i++) {
+                a[i] = 1;
+            }
 			a[n - 1] = 0;
 			
 			// Create [b] array of form [1 4 4 4 4 1]
-			var b = new Float32Array(n).fill(4);
+			var b = new Float32Array(n);
 			b[0] = 1;
+            for (var i = 1; i < n - 1; i++) {
+                b[i] = 4;
+            }
 			b[n - 1] = 1;
 			
 			// Create [c] array of form [0 1 1 1 1 0]
@@ -175,13 +181,18 @@ module Curves {
 			}
 			
 			// Create [a] array of form [0 1 1 1 1 1] 
-			var a = new Float32Array(n).fill(1);
+			var a = new Float32Array(n);
 			a[0] = 0;
-			a[n - 1] = 1;
+            for (var i = 1; i < n ; i++) {
+                a[i] = 1;
+            }
 			
 			// Create [b] array of form [2 4 4 4 4 2]
-			var b = new Float32Array(n).fill(4);
+			var b = new Float32Array(n);
 			b[0] = 1;
+            for (var i = 1; i < n - 1; i++) {
+                b[i] = 4;
+            }
 			b[n - 1] = 1;
 			
 			// Create [c] array of form [1 1 1 1 1 0]
@@ -202,24 +213,17 @@ module Curves {
 		generateTangentsClampedEnd() {
 			// Algorithm from Essential Games and Interactive Applications 2nd Ed. p 446
 			
-			// <any> casts here because the TypeScript definition of Float32Array insists on having a list
-			// of points that are numbers. The map function creates that for us, but TypeScript only wants us to 
-			// have this.points as an array of numbers.
-			var x_positions = Float32Array.from(<any>this.points, <any>function(elem: HermiteControlPoint) {
-				return elem.position.x;
-			});
-			var y_positions = Float32Array.from(<any>this.points, <any>function(elem: HermiteControlPoint) {
-				return elem.position.y;
-			});
+            var x_positions = this.points.map((controlPoint) => controlPoint.position.x);
+            var y_positions = this.points.map((controlPoint) => controlPoint.position.y);
 			
 			var xTangents = Hermite.generateTangentsClampedEnd1d(
-				x_positions,
+				new Float32Array(x_positions),
 				this.points[0].tangent.x,
 				this.points[this.points.length - 1].tangent.x
 			);
 			
 			var yTangents = Hermite.generateTangentsClampedEnd1d(
-				y_positions,
+				new Float32Array(y_positions),
 				this.points[0].tangent.y,
 				this.points[this.points.length - 1].tangent.y
 			);
@@ -232,18 +236,11 @@ module Curves {
 		generateTangentsNaturalSpline() {
 			// Algorithm from Essential Games and Interactive Applications 2nd Ed. p 448
 			
-			// <any> casts here because the TypeScript definition of Float32Array insists on having a list
-			// of points that are numbers. The map function creates that for us, but TypeScript only wants us to 
-			// have this.points as an array of numbers.
-			var x_positions = Float32Array.from(<any>this.points, <any>function(elem: HermiteControlPoint) {
-				return elem.position.x;
-			});
-			var y_positions = Float32Array.from(<any>this.points, <any>function(elem: HermiteControlPoint) {
-				return elem.position.y;
-			});
+            var x_positions = this.points.map((controlPoint) => controlPoint.position.x);
+            var y_positions = this.points.map((controlPoint) => controlPoint.position.y);
 			
-			var xTangents = Hermite.generateTangentsNaturalSpline1d(x_positions);
-			var yTangents = Hermite.generateTangentsNaturalSpline1d(y_positions);
+			var xTangents = Hermite.generateTangentsNaturalSpline1d(new Float32Array(x_positions));
+			var yTangents = Hermite.generateTangentsNaturalSpline1d(new Float32Array(y_positions));
 			
 			for (var i = 0; i < xTangents.length; i++) {
 				this.points[i].tangent.set(xTangents[i], yTangents[i]);
