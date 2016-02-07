@@ -189,15 +189,16 @@ module Curves {
 			
 			// Create [b] array of form [2 4 4 4 4 2]
 			var b = new Float32Array(n);
-			b[0] = 1;
+			b[0] = 2;
             for (var i = 1; i < n - 1; i++) {
                 b[i] = 4;
             }
-			b[n - 1] = 1;
+			b[n - 1] = 2;
 			
 			// Create [c] array of form [1 1 1 1 1 0]
 			var c = new Float32Array(a);
 			c[0] = 1;
+            c[n - 1] = 0;
 			
 			// Create [d] array of form [p0, 3(p2 - p0), 3(p3 - p1), pn]
 			var d = new Float32Array(n);
